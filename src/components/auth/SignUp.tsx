@@ -19,15 +19,7 @@ type SignUpData = z.infer<typeof SignUpSchema>
 
 export default function SignUp() {
 
-  const signup = api.user.signup.useMutation({
-    onSuccess: () => {
-        toast.success('Signed up')
-        router.push('/signin')
-    },
-    onError: (err) => {
-        console.error(err)
-    }
-  })
+  const signup = api.user.signup.useMutation()
 
   const router = useRouter()
 
@@ -37,10 +29,19 @@ export default function SignUp() {
   })
 
   async function onSubmit(data: SignUpData) {
-      signup.mutateAsync(data)
+      await signup.mutateAsync(data, {
+        onSuccess: () => {
+            toast.success('Signed up')
+            router.push('/signin')
+        },
+        onError: (err) => {
+            console.error(err)
+            toast.error(err.message)
+        }
+      })
   }
 
-  return <div className="w-full min-h-screen pt-20 text-lg">
+  return <div className="w-full min-h-screen pt-24 text-lg">
 
     <motion.div initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{duration: 0.7, ease: 'easeInOut', type: 'spring', damping: '10'}} 
     className='w-[90%] sm:w-1/3 mx-auto max-w-3xl z-30'>

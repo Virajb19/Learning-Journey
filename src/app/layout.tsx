@@ -6,6 +6,7 @@ import Providers from "./providers";
 import NextTopLoader from 'nextjs-toploader';
 
 import { TRPCReactProvider } from "~/trpc/react";
+import Navbar from "~/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Learning Journey",
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="en" className={`${grotesk.className} antialiased`} suppressHydrationWarning={true}>
       <body>
         <Providers>
+           <Navbar />
            <NextTopLoader height={4} color="#b91c1c" showSpinner={false} easing="ease"/>
            <TRPCReactProvider>{children}</TRPCReactProvider>
         </Providers>

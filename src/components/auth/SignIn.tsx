@@ -29,8 +29,9 @@ export default function SignIn() {
   async function onSubmit(data: SignInData) {
     
     const res = await signIn('credentials',{...data, redirect: false})
-    if(!res?.ok) {
-       const error = ['User not found. Please check your email !', 'Incorrect password. Try again !!!'].includes(res?.error ?? '') ? res?.error : 'Something went wrong!!!'
+    console.log(res)
+    if(res?.error) {
+       const error = ['User not found. Please check your email !', 'Incorrect password. Try again !!!'].includes(res?.error ?? '') ? res?.error : 'Incorrect credentials!!!'
        return toast.error(error)
     }
     toast.success('Login successfull!. Welcome back!')

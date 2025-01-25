@@ -10,7 +10,7 @@ export default async function CreatePage() {
   const session = await auth()
   if(!session || !session.user) return redirect('/')
 
-  return <div className="w-full min-h-screen pt-16">
+  return <div className="w-full min-h-screen pt-20">
   <div className="w-1/2 mb:w-full mx-auto flex flex-col items-center p-1">
       <h1 className="text-6xl mb:text-4xl font-bold">Learning Journey</h1>
        <div className="flex items-center mb:items-start gap-3 bg-secondary rounded-sm w-full text-bsse font-semibold my-4 p-2">
@@ -22,7 +22,7 @@ export default async function CreatePage() {
            </p>
        </div>
         <CreateCourseForm />
-        <div className="flex flex-col items-center gap-2 bg-secondary p-2 border-4 w-1/2 mb:w-4/5 mt-5 rounded-md">
+        <div className="flex flex-col items-center gap-2 bg-white/5 p-3 w-1/2 mb:w-4/5 mt-5 rounded-md">
            <p className="text-2xl font-semibold"> 8 / 10 Free generations!</p>
           <Progress value={10} className="bg-white/10"/>
          <Tooltip>
