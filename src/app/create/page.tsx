@@ -7,12 +7,13 @@ import { Tooltip, TooltipContent, TooltipTrigger} from '~/components/ui/tooltip'
 
 export default async function CreatePage() {
 
-  // const session = await auth()
-  // if(!session || !session.user) return redirect('/')
+  const session = await auth()
+  if(!session || !session.user) return redirect('/')
 
-  return <div className="w-full border-4 flex flex-col items-center p-1">
+  return <div className="w-full min-h-screen pt-16">
+  <div className="w-1/2 mb:w-full mx-auto flex flex-col items-center p-1">
       <h1 className="text-6xl mb:text-4xl font-bold">Learning Journey</h1>
-       <div className="flex items-center mb:items-start gap-3 bg-secondary rounded-sm w-1/2 mb:w-full text-bsse font-semibold my-4 p-2">
+       <div className="flex items-center mb:items-start gap-3 bg-secondary rounded-sm w-full text-bsse font-semibold my-4 p-2">
           <InfoIcon className="text-blue-600 size-12"/>
            <p>
             Enter in a course title, or what you want to learn about. Then enter a
@@ -21,7 +22,8 @@ export default async function CreatePage() {
            </p>
        </div>
         <CreateCourseForm />
-        <div className="flex flex-col items-center gap-2 bg-secondary p-2 border-4 w-1/5 mt-5 rounded-md">
+        <div className="flex flex-col items-center gap-2 bg-secondary p-2 border-4 w-1/2 mb:w-4/5 mt-5 rounded-md">
+           <p className="text-2xl font-semibold"> 8 / 10 Free generations!</p>
           <Progress value={10} className="bg-white/10"/>
          <Tooltip>
             <TooltipTrigger>
@@ -34,5 +36,6 @@ export default async function CreatePage() {
             </TooltipContent>
          </Tooltip>
         </div>
+     </div>
   </div>
 }

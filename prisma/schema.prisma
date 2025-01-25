@@ -1,35 +1,41 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
     provider = "prisma-client-js"
 }
 
 datasource db {
     provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+enum OauthProvider {
+    GOOGLE
+    GITHUB
+}
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
+model User {
+    id            Int       @id @default(autoincrement())
+    username      String?   
+    email         String?   @unique
+    emailVerified DateTime?
+    password      String?
 
-    @@index([name])
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    lastLogin      DateTime @default(now())
+    ProfilePicture String?  @default("")
+
+    OauthProvider OauthProvider?
+    OauthId       String?
+
+    credits  Int       @default(10)
+    accounts Account[]
+    sessions Session[]
 }
 
 // Necessary for Next auth
 model Account {
     id                       String  @id @default(cuid())
-    userId                   String
+    userId                   Int
     type                     String
     provider                 String
     providerAccountId        String
@@ -49,20 +55,9 @@ model Account {
 model Session {
     id           String   @id @default(cuid())
     sessionToken String   @unique
-    userId       String
+    userId       Int
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
 }
 
 model VerificationToken {

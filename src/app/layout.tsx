@@ -28,10 +28,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${grotesk.className} antialiased min-h-screen pt-20`}>
+    <html lang="en" className={`${grotesk.className} antialiased`} suppressHydrationWarning={true}>
       <body>
         <Providers>
-           <NextTopLoader height={5} color="#38bdf8" showSpinner={false} easing="ease"/>
+           <NextTopLoader height={4} color="#b91c1c" showSpinner={false} easing="ease"/>
            <TRPCReactProvider>{children}</TRPCReactProvider>
         </Providers>
       </body>

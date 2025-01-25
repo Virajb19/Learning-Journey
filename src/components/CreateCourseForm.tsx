@@ -24,7 +24,7 @@ export default function CreateCourseForm() {
 
   form.watch()
 
-  return <div className="w-1/2 mb:w-full border">
+  return <div className="w-full">
           <Form {...form}>
                <form className="flex flex-col px-4" onSubmit={form.handleSubmit(onSubmit)}>
                     <FormField
