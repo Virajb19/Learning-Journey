@@ -1,4 +1,3 @@
-import { z } from 'zod'
 import { SignUpSchema } from '~/lib/zod';
 import bcrypt from 'bcrypt'
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";

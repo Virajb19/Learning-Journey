@@ -13,19 +13,22 @@ declare module "next-auth" {
     user: {
       id: string;
       credits: number
+      isPro: boolean
     } & DefaultSession["user"];
   }
 }
 
 export const authConfig = {
     // adapter: PrismaAdapter(db),
+    // { id: parseInt(user.id as string)}
     callbacks: {
         jwt: async ({user,token}) => {
             if(user) {
-              const existingUser = await db.user.findFirst({where: { OR: [{OauthId: user.id}, { id: parseInt(user.id as string)}]}, select: {id: true, credits: true}})
+              const existingUser = await db.user.findFirst({where: { OR: [{email: user.email}, {OauthId: user.id}]}, select: {id: true, credits: true, isPro: true}})
               if(existingUser) {
                 token.id = existingUser.id
                 token.credits = existingUser.credits
+                token.isPro = existingUser.isPro
               }
             }
              return token
@@ -35,6 +38,7 @@ export const authConfig = {
               session.user.name = token.name
               session.user.id = token.id as string
               session.user.credits = token.credits as number
+              session.user.isPro = token.isPro as boolean
             }
             return session
           },

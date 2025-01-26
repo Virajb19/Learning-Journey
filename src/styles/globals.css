@@ -24,7 +24,7 @@ h3 {
 }
 
 .input-style {
-  @apply p-4 mb:p-2 mb:placeholder:text-sm bg-black placeholder:font-semibold placeholder:text-xl rounded-sm focus:outline-none border-[2.5px] border-transparent focus:border-white duration-100
+  @apply p-4 mb:p-2 mb:placeholder:text-sm bg-[#474549] dark:bg-black placeholder:font-semibold placeholder:text-xl rounded-sm focus:outline-none border-[2.5px] border-transparent dark:focus:border-white duration-100
 }
 
 body {

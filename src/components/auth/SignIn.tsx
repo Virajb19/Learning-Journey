@@ -99,7 +99,7 @@ export default function SignIn() {
                           Don&apos;t have an account yet?{' '}
                           <Link
                             href={'/signup'}
-                            className="text-white font-semibold hover:underline"
+                            className="text-gray-500 font-semibold hover:underline"
                           >
                             Sign Up
                           </Link>
