@@ -12,7 +12,7 @@ type outputUnit = {
     } []
 }
 
-export const courseRouter = createTRPCRouter({
+export const courseRouter = createTRPCRouter({ 
     create: protectedProcedure.input(createCourseSchema).mutation(async ({ ctx, input}) => {
          const { id, credits } = ctx.session.user
          const userId = parseInt(id)
