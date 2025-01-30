@@ -9,10 +9,17 @@ import { motion, AnimatePresence} from 'framer-motion'
 import { Plus, Trash, Loader2 } from 'lucide-react'
 import { twMerge } from "tailwind-merge";
 import { toast } from "sonner";
+import { api } from "~/trpc/react";
+import { useRouter } from 'nextjs-toploader/app'
+import { useEffect } from "react";
 
 type Input = z.infer<typeof createCourseSchema>
 
 export default function CreateCourseForm() {
+
+  const createCourse = api.course.create.useMutation()
+
+  const router = useRouter()
 
   const form = useForm<Input>({
     resolver: zodResolver(createCourseSchema),
@@ -20,11 +27,34 @@ export default function CreateCourseForm() {
   })
 
   async function onSubmit(data: Input) {
-     if(data.units.some(unit => unit === '')) {
+     if(data.units.some(unit => unit === '')) { 
          toast.error('Please fill all the units', { position: 'bottom-right'})
          return
      }
+
+     await createCourse.mutateAsync(data, {
+       onSuccess: ({courseId}) => {
+          toast.success('Course created')
+          form.reset()
+          router.push(`/course/${courseId}`)
+       },
+       onError: (err) => {
+          toast.error(err.message)
+       }
+     })
   }
+
+  useEffect(() => {
+     const handleKeyDowm = (e: KeyboardEvent) => {
+         if(e.key === 'Enter') {
+             const button = document.getElementById('submit') as HTMLButtonElement
+             if(button) button.click()
+         }
+     }
+     document.addEventListener('keydown', handleKeyDowm)
+
+     return () => document.removeEventListener('keydown', handleKeyDowm)
+  }, [])
 
   form.watch()
 
@@ -73,7 +103,7 @@ export default function CreateCourseForm() {
                             </button>
                        </div>
 
-                       <button disabled={form.formState.isSubmitting} type="submit" className="font-bold w-3/4 mb:w-full mx-auto py-2 flex-center gap-2 bg-[#bab4be] dark:bg-white text-black rounded-sm disabled:cursor-not-allowed disabled:opacity-70">
+                       <button id="submit" disabled={form.formState.isSubmitting} type="submit" className="font-bold w-3/4 mb:w-full mx-auto py-2 flex-center gap-2 bg-[#bab4be] dark:bg-white text-black rounded-sm disabled:cursor-not-allowed disabled:opacity-70">
                             {form.formState.isSubmitting ? (
                               <>
                                  <Loader2 className="animate-spin" strokeWidth={2}/> 

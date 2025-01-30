@@ -11,8 +11,9 @@ export default function HomePage() {
   const { data: session, status} = useSession()
   const isAuth = !!session?.user
 
-  return <motion.div initial={{opacity: 0, scale: 0.8}} animate={{opacity: 1, scale: 1}} transition={{duration: 0.3, type: 'spring', bounce: 0.6}} className="w-full min-h-screen border flex-center">
-         <div className="flex flex-col gap-2 w-1/4 mb:w-[90%] bg-white/10 rounded-lg p-5 border-[2.5px] dark:border-transparent">
+  return <div className="w-full min-h-screen border flex-center">
+         <motion.div initial={{opacity: 0, scale: 0.7}} animate={{opacity: 1, scale: 1}} transition={{duration: 0.4, type: 'spring', bounce: 0.6}}
+            className="flex flex-col gap-2 w-1/4 mb:w-[90%] bg-white/10 rounded-lg p-5 border-[2.5px] dark:border-transparent">
              <h1 className="text-4xl font-bold truncate">Welcome! {session?.user.name?.toUpperCase()}</h1>
               <p className="font-semibold flex items-center gap-2">
                  <Sparkles className="text-amber-600 fill-amber-600"/>
@@ -27,7 +28,7 @@ export default function HomePage() {
                           <ArrowRight className="group-hover:translate-x-2 duration-300"/>
                     </Link>
                  </>
-               )}
-         </div>
-  </motion.div>
+               )} 
+         </motion.div>
+  </div>
 }

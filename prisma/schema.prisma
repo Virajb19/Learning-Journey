@@ -51,13 +51,44 @@ model Course {
 }
 
 model Unit {
-    id String @id @default(cuid())
+    id   String @id @default(cuid())
     name String
 
     courseId String
-    course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+    chapters Chapter[]
 
     @@index([courseId], name: "courseId")
+}
+
+model Chapter {
+    id String @id @default(cuid())
+
+    name               String
+    youtubeSearchQuery String
+    videoId            String?
+    summary            String?
+
+    unitId String
+    unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+    questions Question[]
+
+    @@index([unitId], name: "unitId")
+}
+
+model Question {
+    id String @id @default(cuid())
+
+    question String
+    answer String
+    options String[]
+
+    chapterId String
+    chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+    @@index([chapterId], name: "chapterId")
 }
 
 // Necessary for Next auth

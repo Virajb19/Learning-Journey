@@ -26,7 +26,7 @@ export const authConfig = {
             if(user) {
               const existingUser = await db.user.findFirst({where: { OR: [{email: user.email}, {OauthId: user.id}]}, select: {id: true, credits: true, isPro: true}})
               if(existingUser) {
-                token.id = existingUser.id
+                token.id = existingUser.id.toString()
                 token.credits = existingUser.credits
                 token.isPro = existingUser.isPro
               }
@@ -123,7 +123,7 @@ export const authConfig = {
         maxAge: 2 * 24 * 60 * 60
     },
     jwt: {
-        maxAge: 60 * 60
+        maxAge:2 * 24 * 60 * 60
     },
     pages: {
         signIn: '/signin'

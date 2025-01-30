@@ -4,11 +4,15 @@ import { auth } from "~/server/auth";
 import { InfoIcon, Zap } from 'lucide-react'
 import { Progress } from "~/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger} from '~/components/ui/tooltip'
+import { db } from "~/server/db";
 
 export default async function CreatePage() {
 
   const session = await auth()
   if(!session || !session.user) return redirect('/')
+  const userId = parseInt(session.user.id)
+
+  const courseCount = await db.course.count({ where: { userId}})
 
   return <div className="w-full min-h-screen pt-20">
   <div className="w-1/2 mb:w-full mx-auto flex flex-col items-center p-1">
@@ -22,9 +26,9 @@ export default async function CreatePage() {
            </p>
        </div>
         <CreateCourseForm />
-        <div className="flex flex-col items-center gap-2 bg-secondary dark:bg-white/5 p-3 w-1/2 mb:w-4/5 mt-5 rounded-md">
-           <p className="text-2xl font-semibold"> 8 / 10 Free generations!</p>
-          <Progress value={10} className="bg-white/10"/>
+        <div className="flex flex-col items-center gap-3 bg-secondary dark:bg-white/5 p-3 w-1/2 mb:w-4/5 mt-5 rounded-md">
+           <p className="text-2xl font-semibold"> {courseCount} / 10 Free generations!</p>
+          <Progress value={courseCount * 10} className="bg-white/10"/>
          <Tooltip>
             <TooltipTrigger>
                   <button className="flex-center gap-2 px-4 py-2 font-bold text-xl text-white rounded-lg bg-gradient-to-tr from-green-600 to-blue-500 hover:from-green-500 hover:to-blue-600 duration-300">
