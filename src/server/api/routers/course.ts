@@ -7,7 +7,7 @@ import axios from 'axios'
 type outputUnit = {
     title: string,
     chapters: {
-       youtube_search_query: string;
+       youtube_search_query: string; 
        name: string;
     } []
 }
@@ -17,7 +17,7 @@ export const courseRouter = createTRPCRouter({
          const { id, credits } = ctx.session.user
          const userId = parseInt(id)
 
-         if(credits === 0) {
+         if(credits <= 0) {
             throw new TRPCError({ code: 'FORBIDDEN', message: 'No credits'})
          }
 

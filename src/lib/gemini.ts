@@ -77,9 +77,83 @@ export async function getImageSearchTerm(prompt: string) {
         })
 
         const cleanData = text.replace(/```json\s*|\s*```/g, '').trim()
-        return cleanData.trim()
+        return cleanData
     } catch(err) {
         console.error('Error getting response: ', err)
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Failed to get image search term'})
+    }
+}
+
+export async function getVideoSummary(transcript: string) {
+     try {
+        const { text } = await generateText({
+            temperature: 1,
+            model: google('gemini-1.5-flash'),
+            prompt: `
+              You are an AI capable of summarising a youtube transcript.
+              summarise in 250 words or less and do not talk of the sponsors or anything unrelated to the main topic, also do not introduce what the summary is about.
+              Do not explicitly state that this is a summary.
+              --
+              Transcript: ${transcript}
+              --
+              `
+        })
+         const cleanData = text.replace(/```json\s*|\s*```/g, '').trim()
+         return cleanData
+     } catch(err) {
+         console.error(err)
+         throw new Error('Error generating summary')
+     }
+}
+
+const questionSchema = z.object({
+    question: z.string(),
+    answer: z.string(),
+    options: z.array(z.string()).length(4)
+})
+
+export async function getQuestions(chapter_name: string, transcript: string) {
+    try {
+      const { response } = await model.generateContent([
+        `You are a helpful AI that is able to generate mcq questions and answers, the length of each answer should not be more than 15 words
+         ### **Task**:
+         Generate **5 hard MCQ questions** related to **"${chapter_name}"** using the context from the provided transcript 
+
+         --
+         Transcript: ${transcript}
+         --
+
+        ### **Question Format**:
+        - **question**: (string) The MCQ question.
+        - **answer**: (string) The correct answer (max 15 words).
+        - **options**: (array of strings) A list of **4 options**, including the correct answer and 3 incorrect answers (max 15 words).
+
+         ### **Output Format** (JSON array):
+          [
+            {
+                "question": "Your MCQ question here?",
+                "answer": "Correct answer (max 15 words)",
+               "options": [
+                    "Correct answer (max 15 words)",
+                    "Incorrect option 1 (max 15 words)",
+                    "Incorrect option 2 (max 15 words)",
+                    "Incorrect option 3 (max 15 words)"
+                  ]
+               }
+          ]
+          Now, generate **5 such MCQs** (JSON array of **5** questions) based on the transcript.
+        `
+      ])
+
+      const text = response.text()
+      const cleanData = text.replace(/```json\s*|\s*```/g, '').trim()
+      const questions = JSON.parse(cleanData)
+      const result = questionSchema.array().safeParse(questions)
+      if(!result.success) throw new Error(`Invalid output units: ${result.error.flatten().fieldErrors}`)
+      return result.data
+    
+    } catch(err) {
+        console.error(err)
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Error generating questions'})
     }
 }

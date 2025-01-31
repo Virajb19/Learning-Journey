@@ -2,7 +2,6 @@
 
 import { Chapter, Course, Unit } from "@prisma/client"
 import ChapterCard from "./ChapterCard"
-import { Separator } from "~/components/ui/separator"
 import { ChevronRight, ChevronLeft} from 'lucide-react'
 import Link from "next/link"
 import { useMemo, useState } from "react"
@@ -35,7 +34,7 @@ export default function ConfirmChapters({ course }: Props) {
                    <h1 className="text-3xl font-extrabold">{unit.name}</h1>
                    <div className="flex flex-col gap-2">
                       {chapters.map((chapter, i) => {
-                        return <ChapterCard key={chapter.id} chapterIdx={i} chapter={chapter}/>
+                        return <ChapterCard key={chapter.id} chapterIdx={i} chapter={chapter} completedChapters={completedChapters} setCompletedChapters={setCompletedChapters}/>
                       })}
                    </div>
             </div>

@@ -101,6 +101,17 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const errorMiddleware = t.middleware(async ({ next }) => {
+    try {
+      const result = await next()
+      return result
+    } catch(err) {
+       if(err instanceof TRPCError) throw err
+       console.error(err)
+       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong!'})
+    }
+})
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -119,7 +130,7 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure
-  .use(timingMiddleware)
+  .use(timingMiddleware).use(errorMiddleware)
   .use(({ ctx, next }) => {
     if (!ctx.session || !ctx.session.user) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -131,3 +142,4 @@ export const protectedProcedure = t.procedure
       },
     });
   });
+

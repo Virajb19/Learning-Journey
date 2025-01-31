@@ -36,9 +36,10 @@ export default function CreateCourseForm() {
        onSuccess: ({courseId}) => {
           toast.success('Course created')
           form.reset()
-          router.push(`/course/${courseId}`)
+          router.push(`/create/${courseId}`)
        },
        onError: (err) => {
+          console.error(err)
           toast.error(err.message)
        }
      })
