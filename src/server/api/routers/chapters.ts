@@ -9,7 +9,7 @@ export const chapterRouter = createTRPCRouter({
 
          const { chapterId } = input
 
-         const chapter = await ctx.db.chapter.findUnique({ where: { id: chapterId}, select: { id: true, name: true, youtubeSearchQuery: true}})
+         const chapter = await ctx.db.chapter.findUnique({ where: { id: chapterId}, select: { id: true, name: true, youtubeSearchQuery: true, unit: { select: { course: { select: { level: true}}}}}})
          if(!chapter) throw new TRPCError({ code: 'NOT_FOUND', message: 'chapter not found'})
 
          const videoId = await searchYoutube(chapter.youtubeSearchQuery)
@@ -19,10 +19,19 @@ export const chapterRouter = createTRPCRouter({
 
          const summary = await getVideoSummary(transcript)
 
-         const questions = await getQuestions(chapter.name, transcript)
+         const level = chapter.unit.course.level
+         const questions = await getQuestions(chapter.name, transcript, level)
 
          await ctx.db.$transaction(async tx => {
-            await tx.question.createMany({ data: questions.map(q => ({ question: q.question, answer: q.answer, options: q.options, chapterId}))})
+            await tx.question.createMany({ data: questions.map(q => {
+                 const options = q.options.sort(() => Math.random() - 0.5)
+                 return {
+                    question: q.question,
+                    answer: q.answer,
+                    options,
+                    chapterId
+                 }
+            })})
             await tx.chapter.update({ where: { id: chapterId}, data: { summary, videoId }})
          })
 

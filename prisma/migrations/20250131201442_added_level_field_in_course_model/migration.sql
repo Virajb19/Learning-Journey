@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "Level" AS ENUM ('BEGINNER', 'INTERMEDIATE', 'ADVANCED');
+
+-- AlterTable
+ALTER TABLE "Course" ADD COLUMN     "level" "Level" NOT NULL DEFAULT 'INTERMEDIATE';

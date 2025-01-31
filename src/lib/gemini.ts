@@ -3,6 +3,7 @@ import { generateText } from 'ai';
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod'
+import { Level } from '@prisma/client';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string)
 const model = genAI.getGenerativeModel({
@@ -112,12 +113,12 @@ const questionSchema = z.object({
     options: z.array(z.string()).length(4)
 })
 
-export async function getQuestions(chapter_name: string, transcript: string) {
+export async function getQuestions(chapter_name: string, transcript: string, level: Level) {
     try {
       const { response } = await model.generateContent([
         `You are a helpful AI that is able to generate mcq questions and answers, the length of each answer should not be more than 15 words
          ### **Task**:
-         Generate **5 hard MCQ questions** related to **"${chapter_name}"** using the context from the provided transcript 
+         Generate **5 ${level} level MCQ questions** related to **"${chapter_name}"** using the context from the provided transcript 
 
          --
          Transcript: ${transcript}

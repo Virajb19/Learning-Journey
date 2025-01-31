@@ -6,12 +6,12 @@ import { useForm } from "react-hook-form";
 import { z } from 'zod' 
 import { createCourseSchema } from "~/lib/zod";
 import { motion, AnimatePresence} from 'framer-motion'
-import { Plus, Trash, Loader2 } from 'lucide-react'
+import { Plus, Trash, Loader2, ChevronDown, Check } from 'lucide-react'
 import { twMerge } from "tailwind-merge";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { useRouter } from 'nextjs-toploader/app'
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type Input = z.infer<typeof createCourseSchema>
 
@@ -21,9 +21,11 @@ export default function CreateCourseForm() {
 
   const router = useRouter()
 
+  const [isOpen, setIsOpen] = useState(false)
+
   const form = useForm<Input>({
     resolver: zodResolver(createCourseSchema),
-    defaultValues: { title: '', units: ['','','']}
+    defaultValues: { title: '', units: ['','',''], level: 'intermediate'}
   })
 
   async function onSubmit(data: Input) {
@@ -52,9 +54,22 @@ export default function CreateCourseForm() {
              if(button) button.click()
          }
      }
-     document.addEventListener('keydown', handleKeyDowm)
 
-     return () => document.removeEventListener('keydown', handleKeyDowm)
+     const handleClickOutside = (e: MouseEvent) => {
+        const dropdown = document.getElementById("dropdown") as HTMLDivElement
+        if (dropdown && !dropdown.contains(e.target as Node)) {
+          setIsOpen(false)
+        }
+    }
+
+     document.addEventListener('keydown', handleKeyDowm)
+     document.addEventListener("mousedown", handleClickOutside)
+
+      return () =>{
+        document.removeEventListener('keydown', handleKeyDowm)
+        document.removeEventListener("mousedown", handleClickOutside)
+      }
+
   }, [])
 
   form.watch()
@@ -94,6 +109,33 @@ export default function CreateCourseForm() {
                           })}
                       </AnimatePresence>
 
+                       <div className="flex mb:flex-col mb:items-start items-center my-4 uppercase">
+                           <h3 className="flex-[1] text-2xl font-semibold">Level</h3>
+                           <div id="dropdown" onClick={() => setIsOpen(!isOpen)} className="flex-[6] relative mb:w-full text-gray-400 dark:text-white flex items-center justify-between bg-[#474549] cursor-pointer dark:bg-black p-4 mb:p-2 font-semibold rounded-sm text-xl mb:text-lg">
+                              {form.watch('level')} <ChevronDown className={twMerge('duration-300 transition-all', isOpen && 'rotate-180')}/>
+                           <AnimatePresence>
+                               {isOpen && (
+                                  <motion.div initial={{opacity: 0, scale: 0.9}} animate={{opacity: 1, scale: 1}} exit={{opacity: 0, scale: 0.9}} transition={{duration: 0.2, ease: 'easeInOut'}}
+                                      className="absolute z-50 mt-2 inset-x-0 top-full space-y-3 border-[3px] border-white rounded-md p-2 bg-neutral-100 dark:bg-neutral-900">
+                                         {['beginner', 'intermediate', 'advanced'].map(level => {
+                                            const isSelected = level === form.watch('level')
+                                            return <button onClick={(e) => {
+                                              form.setValue('level', level)
+                                            }} key={level} className={twMerge("flex items-center justify-between gap-3 p-2 w-full text-lg uppercase hover:bg-white/10 rounded-sm font-semibold text-gray-400 duration-200", 
+                                               level === 'beginner' && 'hover:text-green-600',
+                                               level === 'intermediate' && 'hover:text-yellow-400',
+                                               level === 'advanced' && 'hover:text-red-600'
+                                            )}>
+                                                 {level}
+                                                 {isSelected && <Check strokeWidth={3}/>}
+                                            </button>
+                                         })}
+                                  </motion.div>
+                               )}
+                                 </AnimatePresence>
+                           </div>
+                       </div>
+
                        <div className="flex-center gap-2 text-lg font-semibold my-4">
                             <button onClick={() => form.setValue('units', [...form.watch('units'), ""])} type="button" disabled={form.watch('units').length >= 5} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 dark:bg-white/10">
                                 <Plus className="text-green-500" strokeWidth={3}/> Add unit 
@@ -103,6 +145,7 @@ export default function CreateCourseForm() {
                                  <Trash className="text-red-500" strokeWidth={3}/>  Remove unit
                             </button>
                        </div>
+
 
                        <button id="submit" disabled={form.formState.isSubmitting} type="submit" className="font-bold w-3/4 mb:w-full mx-auto py-2 flex-center gap-2 bg-[#bab4be] dark:bg-white text-black rounded-sm disabled:cursor-not-allowed disabled:opacity-70">
                             {form.formState.isSubmitting ? (
