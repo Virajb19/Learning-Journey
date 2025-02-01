@@ -6,6 +6,7 @@ import { ChevronRight, ChevronLeft} from 'lucide-react'
 import Link from "next/link"
 import { useMemo, useState, RefObject, createRef } from "react"
 import { toast } from "sonner"
+import { useRouter } from 'next/navigation'
 
 type Props = {
     course: Course & {
@@ -19,6 +20,8 @@ export default function ConfirmChapters({ course }: Props) {
 
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(new Set())
   const [isGenerating, setIsGenerating] = useState(false)
+
+  const router = useRouter()
 
   const totalChapters = useMemo(() => {
      return course.units.reduce((acc, unit) => {
@@ -52,6 +55,7 @@ export default function ConfirmChapters({ course }: Props) {
     }))
     setIsGenerating(false)
     if(totalChapters !== completedChapters.size) toast.error('Try again!!!')
+    router.refresh()
   }
 
 

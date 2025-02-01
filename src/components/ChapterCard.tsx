@@ -48,10 +48,11 @@ export const ChapterCard = forwardRef<ChapterRef,Props>(({ chapterIdx, chapter, 
 
     useImperativeHandle(ref, () => ({
       async createChapter() {
-         if(chapter.videoId) {
-            addChapterIdToSet()
-            return
-         }
+         if(completedChapters.has(chapter.id)) return
+        //  if(chapter.videoId) {
+        //     addChapterIdToSet()
+        //     return
+        //  }
          await createChapter.mutateAsync({ chapterId: chapter.id})
       },
     }))
