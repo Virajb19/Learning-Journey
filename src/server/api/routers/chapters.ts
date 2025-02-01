@@ -12,6 +12,8 @@ export const chapterRouter = createTRPCRouter({
          const chapter = await ctx.db.chapter.findUnique({ where: { id: chapterId}, select: { id: true, name: true, youtubeSearchQuery: true, unit: { select: { course: { select: { level: true}}}}}})
          if(!chapter) throw new TRPCError({ code: 'NOT_FOUND', message: 'chapter not found'})
 
+        //  await new Promise(res => setTimeout(res, 10 * 1000 * Math.random()))
+
          const videoId = await searchYoutube(chapter.youtubeSearchQuery)
          let transcript = await getTranscript(videoId)
          const maxLength = 500

@@ -9,7 +9,7 @@ export default async function page({ params } : { params: { courseId: string}}) 
     if(!session || !session.user) return redirect('/signin')
 
     const { courseId } = await params
-    const course = await db.course.findUnique({ where: { id: courseId}, include: { units: { include: { chapters: { select: { id: true, name: true, unitId: true} }}}}})
+    const course = await db.course.findUnique({ where: { id: courseId}, include: { units: { include: { chapters: { select: { id: true, name: true, unitId: true, videoId: true}}}}}})
     if(!course) return notFound()
 
   return <div className="w-full min-h-screen">

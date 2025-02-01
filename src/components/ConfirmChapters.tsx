@@ -1,15 +1,16 @@
 'use client'
 
 import { Chapter, Course, Unit } from "@prisma/client"
-import ChapterCard from "./ChapterCard"
+import { ChapterCard, ChapterRef } from "./ChapterCard"
 import { ChevronRight, ChevronLeft} from 'lucide-react'
 import Link from "next/link"
-import { useMemo, useState } from "react"
+import { useMemo, useState, RefObject, createRef } from "react"
+import { toast } from "sonner"
 
 type Props = {
     course: Course & {
         units: (Unit & {
-            chapters: Pick<Chapter, "id" | "name" | "unitId"> []
+            chapters: Pick<Chapter, "id" | "name" | "unitId" | "videoId"> []
         }) []
     }
 }
@@ -17,12 +18,42 @@ type Props = {
 export default function ConfirmChapters({ course }: Props) {
 
   const [completedChapters, setCompletedChapters] = useState<Set<string>>(new Set())
+  const [isGenerating, setIsGenerating] = useState(false)
 
   const totalChapters = useMemo(() => {
      return course.units.reduce((acc, unit) => {
          return acc + unit.chapters.length
       }, 0)
   }, [course.units])
+
+  const chapterRefs = useMemo(() => {
+     const refs: Record<string, RefObject<ChapterRef>> = {}
+     course.units.forEach(unit => {
+        unit.chapters.forEach(chapter => {
+            refs[chapter.id] = createRef()
+        })
+     })
+     return refs
+  }, [course.units])
+
+  async function handleGenerate() {
+    // setIsGenerating(true)
+    // const buttons = Array.from(document.querySelectorAll('.chapters')) as HTMLButtonElement[]
+    // await Promise.allSettled(buttons.map(button => button.click()))
+
+    // Object.values(chapterRefs).forEach(ref => {
+        //     ref.current?.createChapter()
+        // })
+
+    setIsGenerating(true)
+    const chapters = Object.values(chapterRefs)
+    await Promise.allSettled(chapters.map(async (chapter) => {
+        await chapter.current?.createChapter()
+    }))
+    setIsGenerating(false)
+    if(totalChapters !== completedChapters.size) toast.error('Try again!!!')
+  }
+
 
   return <div className="flex flex-col gap-2">
          {course.units.map((unit, i) => {
@@ -34,7 +65,7 @@ export default function ConfirmChapters({ course }: Props) {
                    <h1 className="text-3xl font-extrabold">{unit.name}</h1>
                    <div className="flex flex-col gap-2">
                       {chapters.map((chapter, i) => {
-                        return <ChapterCard key={chapter.id} chapterIdx={i} chapter={chapter} completedChapters={completedChapters} setCompletedChapters={setCompletedChapters}/>
+                        return <ChapterCard key={chapter.id} ref={chapterRefs[chapter.id]} chapterIdx={i} chapter={chapter} completedChapters={completedChapters} setCompletedChapters={setCompletedChapters}/>
                       })}
                    </div>
             </div>
@@ -51,8 +82,16 @@ export default function ConfirmChapters({ course }: Props) {
                    Save and Continue <ChevronRight className="group-hover:translate-x-1 duration-200"/>
                 </Link>
              ) : (
-                <button className="button-style group px-3 py-2 flex-center gap-2 rounded-md font-semibold">
-                   Generate <ChevronRight className="group-hover:translate-x-1 duration-200"/>
+                <button disabled={isGenerating} onClick={handleGenerate} className="button-style group px-3 py-2 flex-center gap-2 rounded-md font-semibold disabled:animate-pulse disabled:cursor-not-allowed disabled:opacity-70">
+                  {isGenerating ? (
+                      <>
+                          Generating...
+                      </>
+                  ) : (
+                     <>
+                        Generate <ChevronRight className="group-hover:translate-x-1 duration-200"/>                     
+                     </>
+                  )}
               </button>
              )}
              <div className="grow bg-secondary-foreground/60 h-px"/>

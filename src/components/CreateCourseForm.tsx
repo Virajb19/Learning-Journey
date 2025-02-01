@@ -118,9 +118,13 @@ export default function CreateCourseForm() {
                                   <motion.div initial={{opacity: 0, scale: 0.9}} animate={{opacity: 1, scale: 1}} exit={{opacity: 0, scale: 0.9}} transition={{duration: 0.2, ease: 'easeInOut'}}
                                       className="absolute z-50 mt-2 inset-x-0 top-full space-y-3 border-[3px] border-white rounded-md p-2 bg-neutral-100 dark:bg-neutral-900">
                                          {['beginner', 'intermediate', 'advanced'].map(level => {
+
                                             const isSelected = level === form.watch('level')
-                                            return <button onClick={(e) => {
-                                              form.setValue('level', level)
+                                            type Level = "beginner" | "intermediate" | "advanced" 
+                                            
+                                            return <button type="button" onClick={(e) => {
+                                              form.setValue('level', level as Level)
+                                              setIsOpen(false)
                                             }} key={level} className={twMerge("flex items-center justify-between gap-3 p-2 w-full text-lg uppercase hover:bg-white/10 rounded-sm font-semibold text-gray-400 duration-200", 
                                                level === 'beginner' && 'hover:text-green-600',
                                                level === 'intermediate' && 'hover:text-yellow-400',
