@@ -1,5 +1,7 @@
 import { notFound, redirect } from "next/navigation"
 import CourseSidebar from "~/components/CourseSidebar"
+import QuizCards from "~/components/QuizCards"
+import VideoSummary from "~/components/VideoSummary"
 import { auth } from "~/server/auth"
 import { db } from "~/server/db"
 
@@ -24,9 +26,9 @@ export default async function page({ params } : { params: { slug: string[]}}) {
   const chapter = unit.chapters[chapterIdx]
   if(!chapter) return redirect('/courses')
 
-  return <div className="w-full min-h-screen pt-24">
-         <div className="flex">
+  return <div className="w-full min-h-screen pt-24 flex gap-3">
             <CourseSidebar course={course} currentChapterId={chapter.id}/>
-         </div>
+             <VideoSummary chapter={chapter} unit={unit} unitIdx={unitIdx} chapterIdx={chapterIdx}/>
+             <QuizCards chapter={chapter}/>
   </div>
 }
