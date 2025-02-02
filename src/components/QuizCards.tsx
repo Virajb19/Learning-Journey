@@ -7,10 +7,13 @@ import { ChevronRight } from 'lucide-react'
 import { Button } from "./ui/button";
 import { useCallback, useState } from "react";
 import { twMerge } from "tailwind-merge";
+import { api } from "~/trpc/react";
 
 type Props = { chapter : Chapter & { questions: Question[]}}
 
 export default function QuizCards({ chapter }: Props) {
+
+    // const { data: Questions, isLoading, } = api.chapters.getQuestions.useQuery({ chapterId: chapter.id})
 
     const [answers, setAnswers] = useState<Record<string,string>>({})
     const [questionState, setQuestionState] = useState<Record<string, boolean | null>>({})
@@ -33,7 +36,7 @@ export default function QuizCards({ chapter }: Props) {
 
   return <div className="flex-[2] p-2">
          <h1 className="text-2xl uppercase underline font-semibold">Concept Check</h1>
-         <div className="flex flex-col gap-2">
+         <div className="flex flex-col gap-2 h-[calc(90vh-10rem)] overflow-y-scroll">
              {questions.map(question => {
                 const options = question.options
                 return <div key={question.id} className={twMerge("border border-secondary-foreground/20 p-2 rounded-lg text-wrap flex flex-col gap-2",

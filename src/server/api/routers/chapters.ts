@@ -38,5 +38,14 @@ export const chapterRouter = createTRPCRouter({
          })
 
         return { success: true }
+    }),
+    
+    getQuestions: protectedProcedure.input(z.object({ chapterId: z.string()})).query(async ({ ctx, input}) => {
+         const { chapterId } = input
+         const chapter = await ctx.db.chapter.findUnique({ where: { id: chapterId}, select: { id: true}})
+         if(!chapter) throw new TRPCError({ code: 'NOT_FOUND', message: 'chapter not found'})
+
+         const questions = await ctx.db.question.findMany({ where: { chapterId }})
+         return questions
     })
 })
