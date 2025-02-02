@@ -6,6 +6,13 @@ import { ThemeToggle } from './ThemeToggle';
 import UserAccountNav from './UserAccountNav';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { Plus, ArrowRight} from 'lucide-react'
+import { link } from 'fs';
+
+const Links = [
+      {name: 'create', href: '/create', icon: <Plus />},
+      {name: 'courses', href: '/courses', icon: <ArrowRight />}
+]
 
 export default function Navbar() {
   
@@ -20,6 +27,13 @@ export default function Navbar() {
             <h1 className='text-3xl mb:text-lg font-extrabold'>Learning Journey</h1>
         </motion.div>
         <div className='flex items-center gap-1'>
+            <ul className='flex items-center gap-2 mr-4'>
+              {Links.map(link => {
+                  return <Link href={link.href} key={link.name} className='px-4 py-2 bg-secondary font-semibold dark:bg-white/10 dark:hover:bg-white/15 duration-300 rounded-lg flex items-center gap-2'>
+                      {link.name} {link.icon}
+                  </Link>
+              })}
+            </ul>
               <ThemeToggle />
               {status === 'loading' ? <Loader2 className='animate-spin size-10'/> : isAuth ? <UserAccountNav /> : <Link className='flex items-center font-medium mb:hidden gap-2 p-2 rounded-lg bg-secondary dark:bg-white/10 text-xl dark:text-white group' href={'/signin'}>Sign in<LogIn className='group-hover:translate-x-0.5 duration-200'/></Link>}
         </div>

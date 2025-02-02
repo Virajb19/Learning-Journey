@@ -82,7 +82,7 @@ export default function ConfirmChapters({ course }: Props) {
              </Link>
 
              {totalChapters === completedChapters.size ? (
-                <Link href={`/course/${course.id}`} className="button-style group px-3 py-2 flex-center gap-2 rounded-md font-semibold">
+                <Link href={`/course/${course.id}/0/0`} className="button-style group px-3 py-2 flex-center gap-2 rounded-md font-semibold">
                    Save and Continue <ChevronRight className="group-hover:translate-x-1 duration-200"/>
                 </Link>
              ) : (
