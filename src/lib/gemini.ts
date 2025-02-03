@@ -29,7 +29,7 @@ export async function generateChapters(title: string, units: string[]) {
             ### **Task**:
             For each unit, generate an object with:
             - **title**: (string) The unit's name.
-            - **chapters**: (array) A list of chapters, where each chapter contains:
+            - **chapters**: (array) A list of chapters (not more than *7* chapters), where each chapter contains:
             - **name**: (string) A descriptive title for the chapter.
             - **youtube_search_query**: (string) A query to search for educational YouTube videos on the topic.
 

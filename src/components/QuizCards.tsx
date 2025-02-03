@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { useCallback, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { api } from "~/trpc/react";
+import { toast } from "sonner";
 
 type Props = { chapter : Chapter & { questions: Question[]}}
 
@@ -19,6 +20,8 @@ export default function QuizCards({ chapter }: Props) {
     const [questionState, setQuestionState] = useState<Record<string, boolean | null>>({})
 
     const questions = chapter.questions
+
+    // toast.success(JSON.stringify(questions))
 
     const CheckAnswer = useCallback(() => {
         const newQuestionState = {...questionState}

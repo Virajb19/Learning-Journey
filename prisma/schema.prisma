@@ -43,10 +43,11 @@ model User {
 }
 
 model Course {
-    id    String @id @default(cuid())
-    name  String
-    image String
-    level Level @default(INTERMEDIATE)
+    id          String  @id @default(cuid())
+    name        String
+    image       String
+    level       Level   @default(INTERMEDIATE)
+    isCompleted Boolean @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -78,7 +79,7 @@ model Chapter {
     summary            String?
 
     unitId String
-    unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+    unit   Unit   @relation(fields: [unitId], references: [id], onDelete: Cascade)
 
     questions Question[]
 
@@ -89,11 +90,11 @@ model Question {
     id String @id @default(cuid())
 
     question String
-    answer String
-    options String[]
+    answer   String
+    options  String[]
 
     chapterId String
-    chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+    chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
     @@index([chapterId], name: "chapterId")
 }

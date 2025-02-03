@@ -4,6 +4,7 @@ import { createCourseSchema } from "~/lib/zod";
 import { getImageSearchTerm, generateChapters } from "~/lib/gemini";
 import axios from 'axios'
 import { Level } from '@prisma/client'
+import { z } from 'zod'
 
 type outputUnit = {
     title: string,
@@ -45,5 +46,13 @@ export const courseRouter = createTRPCRouter({
          })
 
          return { courseId: course.id }
+    }),
+    toggleCompletion: protectedProcedure.input(z.object({courseId: z.string()})).mutation(async ({ ctx, input}) => {
+       const { courseId } = input
+       const course = await ctx.db.course.findUnique({ where: { id: courseId}, select: { isCompleted: true}})
+       if(!course) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found'})
+      
+       await ctx.db.course.update({ where: { id: courseId}, data: { isCompleted: !course.isCompleted}})
+       return course.isCompleted
     })
 })

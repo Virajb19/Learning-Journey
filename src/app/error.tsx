@@ -14,7 +14,7 @@ const Error: React.FC<ErrorProps> = ({ error, reset }) => {
   }, [error]);
 
   return (
-    <div className="wrapper my-auto flex-center">
+    <div className="wrapper my-auto flex-center min-h-screen">
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-3xl font-bold text-red-600">
           Oops! Something went wrong
