@@ -26,7 +26,7 @@ export default async function CreatePage() {
            </p>
        </div>
         <CreateCourseForm />
-        <ProgressSection courseCount={courseCount}/>
+        {!session.user.isPro && <ProgressSection courseCount={courseCount}/>}
      </div>
   </div>
 }

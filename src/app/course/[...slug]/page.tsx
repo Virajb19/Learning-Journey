@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link"
 import { twMerge } from "tailwind-merge"
 
-export default async function page({ params } : { params: { slug: string[]}}) {
+export default async function page({ params } : { params: Promise<{ slug: string[]}>}) {
   
   const session = await auth()
   if(!session || !session.user) return redirect('/signin')

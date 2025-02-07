@@ -4,7 +4,7 @@ import { db } from "~/server/db"
 import { InfoIcon } from 'lucide-react'
 import ConfirmChapters from "~/components/ConfirmChapters"
 
-export default async function page({ params } : { params: { courseId: string}}) {
+export default async function page({ params } : { params: Promise<{ courseId: string}>}) {
     const session = await auth()
     if(!session || !session.user) return redirect('/signin')
 

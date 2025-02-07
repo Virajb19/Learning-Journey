@@ -20,5 +20,8 @@ export const userRouter = createTRPCRouter({
           const userId = parseInt(ctx.session.user.id)
           const courses = await ctx.db.course.findMany({ where: { userId }, orderBy: { createdAt: 'desc'}, include: { units: { include: { chapters: { select: { id: true}}}}}})
           return courses
+     }),
+     subscribe: protectedProcedure.mutation(async ({ ctx, input}) => {
+         
      })
 })

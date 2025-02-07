@@ -16,10 +16,10 @@ type outputUnit = {
 
 export const courseRouter = createTRPCRouter({ 
     create: protectedProcedure.input(createCourseSchema).mutation(async ({ ctx, input}) => {
-         const { id, credits } = ctx.session.user
+         const { id, credits, isPro } = ctx.session.user
          const userId = parseInt(id)
 
-         if(credits <= 0) {
+         if(!isPro && credits <= 0) {
             throw new TRPCError({ code: 'FORBIDDEN', message: 'No credits'})
          }
 
@@ -53,6 +53,27 @@ export const courseRouter = createTRPCRouter({
        if(!course) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found'})
       
        await ctx.db.course.update({ where: { id: courseId}, data: { isCompleted: !course.isCompleted}})
-       return course.isCompleted
+       return { isCompleted: course.isCompleted}
+    }),
+    isCompleted: protectedProcedure.input(z.object({ courseId: z.string()})).query(async ({ ctx, input}) => {
+         const { courseId } = input
+         const course = await ctx.db.course.findUnique({ where: { id: courseId}, select: { isCompleted: true}})
+         if(!course) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found'})
+      
+         return { isCompleted: course.isCompleted}
+     }),
+    delete: protectedProcedure.input(z.object({ courseId: z.string()})).mutation(async ({ ctx, input}) => {
+          const { courseId } = input
+          const user = ctx.session.user
+
+          if(!user.isPro) throw new TRPCError({ code: 'FORBIDDEN', message: 'Unauthorized'})
+
+          const course = await ctx.db.course.findUnique({ where: { id: courseId}, select: { id: true}})
+          if(!course) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found'})
+
+            await ctx.db.course.update({ where: { id: course.id}, data: { deletedAt: new Date()}})
+         //  await ctx.db.course.delete({ where: { id: course.id}})
+
+          return { success: true}
     })
 })

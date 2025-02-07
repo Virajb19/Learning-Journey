@@ -141,6 +141,7 @@ export default function CreateCourseForm() {
                        </div>
 
                        <div className="flex-center gap-2 text-lg font-semibold my-4">
+                        <div className="h-px bg-gray-400 grow"/>
                             <button onClick={() => form.setValue('units', [...form.watch('units'), ""])} type="button" disabled={form.watch('units').length >= 5} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 dark:bg-white/10">
                                 <Plus className="text-green-500" strokeWidth={3}/> Add unit 
                             </button>
@@ -148,6 +149,7 @@ export default function CreateCourseForm() {
                             <button onClick={() => form.setValue('units', form.watch('units').slice(0,-1))} type="button" disabled={form.watch('units').length === 1} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 dark:bg-white/10">
                                  <Trash className="text-red-500" strokeWidth={3}/>  Remove unit
                             </button>
+                          <div className="h-px bg-gray-400 grow"/>
                        </div>
 
 
