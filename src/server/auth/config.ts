@@ -20,17 +20,16 @@ declare module "next-auth" {
 
 export const authConfig = {
     // adapter: PrismaAdapter(db),
-    // { id: parseInt(user.id as string)}
     callbacks: {
-        jwt: async ({user,token}) => {
-            if(user) {
-              const existingUser = await db.user.findFirst({where: { OR: [{email: user.email}, {OauthId: user.id}]}, select: {id: true, credits: true, isPro: true}})
-              if(existingUser) {
-                token.id = existingUser.id.toString()
-                token.credits = existingUser.credits
-                token.isPro = existingUser.isPro
-              }
+        jwt: async ({token}) => {
+          if(token && token.sub) {
+            const existingUser = await db.user.findFirst({where: { OR: [{OauthId: token.sub}, { id: parseInt(token.sub)}, { email: token.email}]}, select: {id: true, credits: true, isPro: true}})
+            if(existingUser) {
+              token.id = existingUser.id.toString()
+              token.credits = existingUser.credits
+              token.isPro = existingUser.isPro
             }
+           }
              return token
           },
           session: async ({session, token}) => {

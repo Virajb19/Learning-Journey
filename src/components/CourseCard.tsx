@@ -59,7 +59,7 @@ const [isCompleted, setIsCompleted] = useState(course.isCompleted)
   onSettled: () => {
         router.refresh()
        // utils.user.getCourses.refetch()
-      //  utils.course.isCompleted.invalidate()
+      //  await utils.course.isCompleted.invalidate()
       // utils.course.create.isMutating()
       //  const prevQuestions = utils.chapters.getQuestions.getData({ chapterId: chapter.id})
     }

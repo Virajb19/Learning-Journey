@@ -7,9 +7,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "~/components/ui/dropdown-menu"
-import { LogOut } from 'lucide-react';
+import { File, LogOut, Plus } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import UserAvatar from './UserAvatar';
+import Link from "next/link";
 
 export default function UserAccountNav() {
 
@@ -30,6 +31,20 @@ export default function UserAccountNav() {
                     </DropdownMenuItem>
 
                     <DropdownMenuSeparator />
+
+                 <div className="sm:hidden">
+                    <DropdownMenuItem> 
+                         <Link href={'/create'} className="flex items-center gap-2 text-base"><Plus className="size-4" strokeWidth={3}/>create</Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem>
+                        <Link href={'/courses'} className="flex items-center gap-2 text-base"><File className="size-4" strokeWidth={3}/>courses</Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+                    </div>
 
                     <DropdownMenuItem className='outline-none cursor-pointer' onClick={() => signOut({callbackUrl: '/'})}>
                        <span className='flex items-center gap-2 text-base transition-all duration-300 hover:text-red-500'><LogOut className='size-4'strokeWidth={3}/>Log out </span>

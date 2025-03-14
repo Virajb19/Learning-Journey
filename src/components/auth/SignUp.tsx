@@ -31,6 +31,7 @@ export default function SignUp() {
   async function onSubmit(data: SignUpData) {
       await signup.mutateAsync(data, {
         onSuccess: () => {
+            form.reset()
             toast.success('Signed up')
             router.push('/signin')
         },

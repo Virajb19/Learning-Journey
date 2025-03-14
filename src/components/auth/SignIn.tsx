@@ -34,8 +34,9 @@ export default function SignIn() {
        const error = ['User not found. Please check your email !', 'Incorrect password. Try again !!!'].includes(res?.error ?? '') ? res?.error : 'Incorrect credentials!!!'
        return toast.error(error)
     }
-    toast.success('Login successfull!. Welcome back!')
+    form.reset()
     router.push('/')
+    toast.success('Login successfull!. Welcome back!')
   }
 
   return <div className="w-full min-h-screen flex-center text-lg">

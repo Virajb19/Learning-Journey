@@ -21,10 +21,10 @@ export function OAuthButton({label, provider}: {label: string, provider: string}
     
   return (
     <motion.button
-      onClick={() => {
+      onClick={async () => {
         try {
           setLoading(true)
-          signIn(provider, { callbackUrl: "/" });
+          await signIn(provider, { callbackUrl: "/" });
           toast.success("Signed in successfully");
         } catch (error) {
           toast.error("Something went wrong !!!");

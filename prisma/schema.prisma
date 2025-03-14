@@ -49,8 +49,8 @@ model Course {
     level       Level   @default(INTERMEDIATE)
     isCompleted Boolean @default(false)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
     deletedAt DateTime?
 
     userId Int
@@ -98,6 +98,15 @@ model Question {
     chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
     @@index([chapterId], name: "chapterId")
+}
+
+model UserSubscription {
+    id                     String    @id @default(cuid())
+    userId                 Int       @unique
+    stripeCustomerId       String    @unique @map(name: "stripe_customer_id")
+    stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
+    stripePriceId          String?   @map(name: "stripe_price_id")
+    stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
 }
 
 // Necessary for Next auth
