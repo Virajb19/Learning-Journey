@@ -15,11 +15,12 @@ export async function POST(req: NextRequest) {
 
         const session = event.data.object as Stripe.Checkout.Session;
 
-        if(event.type === 'checkout.session.completed') {
-            const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
-            if(!session?.metadata?.userId) return NextResponse.json({msg: 'No userId found'}, { status: 404})
-            const userId = parseInt(session.metadata.userId)
+        const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+        if(!session?.metadata?.userId) return NextResponse.json({msg: 'No userId found'}, { status: 404})
+        const userId = parseInt(session.metadata.userId)
 
+        if(event.type === 'checkout.session.completed') {
+           
             const priceId = subscription.items.data[0]?.price?.id;
             if (!priceId) return NextResponse.json({ msg: "No price ID found" }, { status: 400 });
                   
@@ -34,6 +35,20 @@ export async function POST(req: NextRequest) {
 
             await db.user.update({where: {id: userId}, data: {isPro: true}})
         }
+
+        if (event.type === "customer.subscription.deleted") {
+            const subscription = event.data.object as Stripe.Subscription;
+        
+            await db.userSubscription.delete({
+                where: { stripeSubscriptionId: subscription.id },
+            });
+        
+            await db.user.update({
+                where: { id: userId },
+                data: { isPro: false },
+            });
+        }
+        
 
         if(event.type === 'invoice.payment_succeeded') {
             const subscription = await stripe.subscriptions.retrieve(session.subscription as string);

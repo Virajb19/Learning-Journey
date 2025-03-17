@@ -23,7 +23,7 @@ export const authConfig = {
     callbacks: {
         jwt: async ({token}) => {
           if(token && token.sub) {
-            const existingUser = await db.user.findFirst({where: { OR: [{OauthId: token.sub}, { id: parseInt(token.sub)}, { email: token.email}]}, select: {id: true, credits: true, isPro: true}})
+            const existingUser = await db.user.findFirst({where: { OR: [{OauthId: token.sub}, { id: !isNaN(Number(token.sub)) ? Number(token.sub) : undefined}, { email: token.email}]}, select: {id: true, credits: true, isPro: true}})
             if(existingUser) {
               token.id = existingUser.id.toString()
               token.credits = existingUser.credits
@@ -45,9 +45,9 @@ export const authConfig = {
             try {
                
               if(account?.provider && profile) {
-       
+        
                const provider = account.provider === 'github' ? 'GITHUB' : 'GOOGLE'
-                
+                 // check if Oauth Id changes ? 
                 const existingUser = await db.user.findFirst({where: { OR: [{email: user.email!}, {OauthId: user.id}]}, select: {id: true}})
                 if(existingUser) {
                   await db.user.update({
@@ -109,8 +109,8 @@ export const authConfig = {
       }
     }),
     GitHubProvider({
-        clientId: process.env.GITHUB_ID || "",
-        clientSecret: process.env.GITHUB_SECRET || ""
+        clientId: process.env.GITHUB_CLIENT_ID || "",
+        clientSecret: process.env.GITHUB_CLIENT_SECRET || ""
        }),
     GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID || "",

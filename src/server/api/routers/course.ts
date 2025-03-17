@@ -20,7 +20,7 @@ export const courseRouter = createTRPCRouter({
          const userId = parseInt(id)
 
          if(!isPro && credits <= 0) {
-            throw new TRPCError({ code: 'FORBIDDEN', message: 'No credits'})
+            throw new TRPCError({ code: 'FORBIDDEN', message: 'No credits. Buy subscription'})
          }
 
          const { title, units, level } = input
@@ -41,7 +41,9 @@ export const courseRouter = createTRPCRouter({
                  await tx.chapter.createMany({ data: outputUnits[i].chapters.map(chapter => ({name: chapter.name, youtubeSearchQuery: chapter.youtube_search_query, unitId: unit.id}))})
             }))
             
-            await tx.user.update({where: { id: userId }, data: { credits: { decrement: 1}}})
+            if(!isPro) {
+               await tx.user.update({where: { id: userId }, data: { credits: { decrement: 1}}})
+            }
             return course
          })
 

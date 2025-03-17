@@ -25,7 +25,7 @@ export function OAuthButton({label, provider}: {label: string, provider: string}
         try {
           setLoading(true)
           await signIn(provider, { callbackUrl: "/" });
-          toast.success("Signed in successfully");
+          // toast.success("Signed in successfully");
         } catch (error) {
           toast.error("Something went wrong !!!");
           setLoading(false)
