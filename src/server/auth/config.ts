@@ -23,7 +23,7 @@ export const authConfig = {
     callbacks: {
         jwt: async ({token}) => {
           if(token && token.sub) {
-            const existingUser = await db.user.findFirst({where: { OR: [{OauthId: token.sub}, { id: !isNaN(Number(token.sub)) ? Number(token.sub) : undefined}, { email: token.email}]}, select: {id: true, credits: true, isPro: true}})
+            const existingUser = await db.user.findFirst({where: { OR: [{OauthId: token.sub}, { id: !isNaN(Number(token.sub)) ? parseInt(token.sub) : undefined}, { email: token.email}]}, select: {id: true, credits: true, isPro: true}})
             if(existingUser) {
               token.id = existingUser.id.toString()
               token.credits = existingUser.credits
@@ -119,14 +119,14 @@ export const authConfig = {
   ],
     session: {
         strategy: 'jwt',
-        maxAge: 2 * 24 * 60 * 60
+        maxAge: 30 * 24 * 60 * 60
     },
     jwt: {
-        maxAge:2 * 24 * 60 * 60
+        maxAge: 7 * 24 * 60 * 60
     },
     pages: {
         signIn: '/signin'
     },
-    secret: process.env.AUTH_SECRET || 'secret'
+    secret: process.env.AUTH_SECRET || 'secret',
  
 } satisfies NextAuthConfig;

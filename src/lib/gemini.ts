@@ -29,7 +29,7 @@ export async function generateChapters(title: string, units: string[]) {
             ### **Task**:
             For each unit, generate an object with:
             - **title**: (string) The unit's name.
-            - **chapters**: (array) A list of chapters (not more than *7* chapters), where each chapter contains:
+            - **chapters**: (array) A list of chapters (not more than *5* chapters), where each chapter contains:
             - **name**: (string) A descriptive title for the chapter.
             - **youtube_search_query**: (string) A query to search for educational YouTube videos on the topic.
 
@@ -102,7 +102,7 @@ export async function getVideoSummary(transcript: string) {
          const cleanData = text.replace(/```json\s*|\s*```/g, '').trim()
          return cleanData
      } catch(err) {
-         console.error(err)
+         console.error('Error generating video summary',err)
          throw new Error('Error generating summary')
      }
 }
@@ -150,11 +150,91 @@ export async function getQuestions(chapter_name: string, transcript: string, lev
       const cleanData = text.replace(/```json\s*|\s*```/g, '').trim()
       const questions = JSON.parse(cleanData)
       const result = questionSchema.array().safeParse(questions)
-      if(!result.success) throw new Error(`Invalid output units: ${result.error.flatten().fieldErrors}`)
+      if(!result.success) {
+        console.error('Validation errors:', result.error.format());
+        throw new Error(`Invalid output units: ${result.error.flatten().fieldErrors}`)
+      }
       return result.data
     
     } catch(err) {
-        console.error(err)
+        console.error('Error generating questions',err)
         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Error generating questions'})
+    }
+}
+
+// chapter_name will be unique or use chapter_id instead to avoid any bug
+
+const chapterContentSchema = z.object({
+    summary: z.string(),
+    questions: z.array(questionSchema)
+})
+
+type chapterContentType = z.infer<typeof chapterContentSchema>
+
+export async function getChapterContents(chapters: {name: string, transcript: string} [], level: Level): Promise<Record<string, chapterContentType>> {
+    console.log('Generating content')
+    try {
+         const prompt = `
+            You are an AI assistant that generates comprehensive learning materials for course chapters.
+
+            ### Task:
+            For each chapter, generate:
+            1. A concise summary (250 words or less) of the transcript
+            2. 5 ${level}-level MCQ questions with answers and options
+
+            ### Input Chapters:
+            ${chapters.map((chapter,i) => `
+               Chapter ${i + 1}: "${chapter.name}"  
+               Transcript: ${chapter.transcript} 
+            `).join('\n')}
+
+              ### Output Format (JSON):
+            {
+                "Chapter 1 Name": {
+                    "summary": "Concise summary of the chapter content...",
+                    "questions": [
+                        {
+                            "question": "MCQ question text?",
+                            "answer": "Correct answer (max 15 words)",
+                            "options": [
+                                "Correct answer",
+                                "Incorrect option 1",
+                                "Incorrect option 2",
+                                "Incorrect option 3"
+                            ]
+                        },
+                        // ...4 more questions
+                    ]
+                },
+                // ...other chapters
+            }
+
+                  Important Rules:
+            1. Use EXACTLY these chapter names as keys: ${chapters.map(c => `"${c.name}"`).join(', ')}
+            2. Each chapter must have exactly 5 questions
+            3. Summary must be under 250 words
+            4. Respond ONLY with valid JSON, no other text or markdown
+
+             Now generate the output for all ${chapters.length} chapters.
+
+         `
+         const { response } = await model.generateContent([prompt])
+         const text = response.text()
+         const cleanData = text.replace(/```json\s*|\s*```/g, '').trim()
+         const output = JSON.parse(cleanData)
+        //  console.log(output)
+         const result = z.record(z.string(), chapterContentSchema).safeParse(output)
+         if(!result.success) {
+            console.error('Validation errors:', result.error.format());
+            throw new Error(`Invalid output format: ${JSON.stringify(result.error.flatten())}`);
+         }
+         const missingChapters = chapters.filter(c => !result.data[c.name])
+         if(missingChapters.length > 0) {
+            throw new Error(`Missing chapters in response: ${missingChapters.map(c => c.name).join(', ')}`)
+         }
+         return result.data
+    } catch(err) {
+        console.error('Error generating chapter contents', err)
+        throw new TRPCError({code: 'INTERNAL_SERVER_ERROR', message: 'Error generating chapter contents'})
     }
 }

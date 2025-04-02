@@ -7,6 +7,7 @@ import Link from "next/link"
 import { useMemo, useState, RefObject, createRef } from "react"
 import { toast } from "sonner"
 import { useRouter } from 'next/navigation'
+import { api } from "~/trpc/react"
 
 type Props = {
     course: Course & {
@@ -58,6 +59,16 @@ export default function ConfirmChapters({ course }: Props) {
     router.refresh()
   }
 
+  const createQuestions = api.chapters.createQuestions.useMutation({
+    onSuccess: () => {
+       router.push(`/course/${course.id}/0/0`)
+    },
+    onError: (err) => {
+       console.error(err)
+       toast.error(err.message)
+    }
+  })
+
 
   return <div className="flex flex-col gap-2">
          {course.units.map((unit, i) => {
@@ -81,13 +92,14 @@ export default function ConfirmChapters({ course }: Props) {
                   <ChevronLeft className="group-hover:-translate-x-1 duration-200"/> Back
              </Link>
 
-             {totalChapters === completedChapters.size ? (
+             {/* {totalChapters === completedChapters.size ? (
                 <Link href={`/course/${course.id}/0/0`} className="button-style group px-3 py-2 flex-center gap-2 rounded-md font-semibold">
                    Save and Continue <ChevronRight className="group-hover:translate-x-1 duration-200"/>
                 </Link>
-             ) : (
-                <button disabled={isGenerating} onClick={handleGenerate} className="button-style group px-3 py-2 flex-center gap-2 rounded-md font-semibold disabled:animate-pulse disabled:cursor-not-allowed disabled:opacity-70">
-                  {isGenerating ? (
+             ) : ( */}
+             {/* disabled={isGenerating} onClick={handleGenerate} */}
+                <button disabled={createQuestions.isPending} onClick={() => createQuestions.mutate({courseId: course.id})}  className="button-style group px-3 py-2 flex-center gap-2 rounded-md font-semibold disabled:animate-pulse disabled:cursor-not-allowed disabled:opacity-70">
+                  {createQuestions.isPending ? (
                       <>
                           Generating...
                       </>
@@ -97,7 +109,7 @@ export default function ConfirmChapters({ course }: Props) {
                      </>
                   )}
               </button>
-             )}
+             {/* )} */}
              <div className="grow bg-secondary-foreground/60 h-px"/>
          </div>
   </div>

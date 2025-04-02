@@ -3,6 +3,7 @@ import axios from "axios";
 import { YoutubeTranscript } from 'youtube-transcript'
 
 export async function searchYoutube(searchQuery: string) {
+   console.log('Searching video for', searchQuery)
    try {
       searchQuery = encodeURIComponent(searchQuery)
       const { data } = await axios.get(
@@ -17,6 +18,7 @@ export async function searchYoutube(searchQuery: string) {
 }
 
 export async function getTranscript(videoId: string) {
+   console.log("Creating transcript for video", videoId)
      try {
          let transcript_arr = await YoutubeTranscript.fetchTranscript(videoId, { lang: 'en'})
          let transcript = ""

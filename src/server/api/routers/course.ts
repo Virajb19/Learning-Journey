@@ -49,7 +49,7 @@ export const courseRouter = createTRPCRouter({
 
          return { courseId: course.id }
     }),
-    toggleCompletion: protectedProcedure.input(z.object({courseId: z.string()})).mutation(async ({ ctx, input}) => {
+    toggleCompletion: protectedProcedure.input(z.object({courseId: z.string().cuid()})).mutation(async ({ ctx, input}) => {
        const { courseId } = input
        const course = await ctx.db.course.findUnique({ where: { id: courseId}, select: { isCompleted: true}})
        if(!course) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found'})
@@ -57,14 +57,14 @@ export const courseRouter = createTRPCRouter({
        await ctx.db.course.update({ where: { id: courseId}, data: { isCompleted: !course.isCompleted}})
        return { isCompleted: course.isCompleted}
     }),
-    isCompleted: protectedProcedure.input(z.object({ courseId: z.string()})).query(async ({ ctx, input}) => {
+    isCompleted: protectedProcedure.input(z.object({ courseId: z.string().cuid()})).query(async ({ ctx, input}) => {
          const { courseId } = input
          const course = await ctx.db.course.findUnique({ where: { id: courseId}, select: { isCompleted: true}})
          if(!course) throw new TRPCError({ code: 'NOT_FOUND', message: 'course not found'})
       
          return { isCompleted: course.isCompleted}
      }),
-    delete: protectedProcedure.input(z.object({ courseId: z.string()})).mutation(async ({ ctx, input}) => {
+    delete: protectedProcedure.input(z.object({ courseId: z.string().cuid()})).mutation(async ({ ctx, input}) => {
           const { courseId } = input
           const user = ctx.session.user
 

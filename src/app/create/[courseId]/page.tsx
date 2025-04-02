@@ -7,9 +7,10 @@ import ConfirmChapters from "~/components/ConfirmChapters"
 export default async function page({ params } : { params: Promise<{ courseId: string}>}) {
     const session = await auth()
     if(!session || !session.user) return redirect('/signin')
+    const userId = parseInt(session.user.id)
 
     const { courseId } = await params
-    const course = await db.course.findUnique({ where: { id: courseId}, include: { units: { include: { chapters: { select: { id: true, name: true, unitId: true, videoId: true}}}}}})
+    const course = await db.course.findUnique({ where: { id: courseId, userId}, include: { units: { include: { chapters: { select: { id: true, name: true, unitId: true, videoId: true}}}}}})
     if(!course) return notFound()
 
   return <div className="w-full min-h-screen">
