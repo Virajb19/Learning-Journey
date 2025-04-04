@@ -2,7 +2,7 @@
 
 It is an AI-powered web app where you can create course of any topic 
 
-https://github.com/user-attachments/assets/dbc03411-a6dc-4c70-8b7f-632dfde63dbe
+https://github.com/user-attachments/assets/7b8b1c4f-0e83-41cc-9216-bf4646a41e72
 
 ## How to run locally ?
 

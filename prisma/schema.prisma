@@ -18,6 +18,12 @@ enum Level {
     ADVANCED
 }
 
+// enum courseStatus {
+//     draft
+//     generating
+//     published
+// }
+
 model User {
     id            Int       @id @default(autoincrement())
     username      String?

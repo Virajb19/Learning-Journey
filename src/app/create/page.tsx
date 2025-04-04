@@ -25,7 +25,7 @@ export default async function CreatePage() {
             will generate a course for you!
            </p>
        </div>
-        <CreateCourseForm />
+        <CreateCourseForm isPro={session.user.isPro} credits={session.user.credits}/>
         {!session.user.isPro && <ProgressSection courseCount={courseCount}/>}
      </div>
   </div>

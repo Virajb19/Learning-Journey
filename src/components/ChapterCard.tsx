@@ -25,6 +25,7 @@ export const ChapterCard = forwardRef<ChapterRef,Props>(({ chapterIdx, chapter, 
           addChapterIdToSet()
         },
         onError: (err) => {
+          
           console.error(err)
           setSuccess(false)
           // toast.error(err.message)

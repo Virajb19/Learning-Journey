@@ -59,7 +59,7 @@ export default function ConfirmChapters({ course }: Props) {
     router.refresh()
   }
 
-  const createQuestions = api.chapters.createQuestions.useMutation({
+  const createQuestions = api.course.createQuestions.useMutation({
     onSuccess: () => {
        router.push(`/course/${course.id}/0/0`)
     },
@@ -101,7 +101,7 @@ export default function ConfirmChapters({ course }: Props) {
                 <button disabled={createQuestions.isPending} onClick={() => createQuestions.mutate({courseId: course.id})}  className="button-style group px-3 py-2 flex-center gap-2 rounded-md font-semibold disabled:animate-pulse disabled:cursor-not-allowed disabled:opacity-70">
                   {createQuestions.isPending ? (
                       <>
-                          Generating...
+                        <div className="size-5 border-[3px] border-white/30 dark:border-black rounded-full animate-spin border-t-white dark:border-t-white"/> Generating...
                       </>
                   ) : (
                      <>

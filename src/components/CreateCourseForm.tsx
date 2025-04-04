@@ -12,10 +12,16 @@ import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { useRouter } from 'nextjs-toploader/app'
 import { useEffect, useState } from "react";
+import { Session } from "next-auth";
 
 type Input = z.infer<typeof createCourseSchema>
 
-export default function CreateCourseForm() {
+type Props = {
+  isPro: boolean,
+  credits: number
+}
+
+export default function CreateCourseForm({credits,isPro}: Props) {
 
   const createCourse = api.course.create.useMutation()
 
@@ -32,6 +38,12 @@ export default function CreateCourseForm() {
      if(data.units.some(unit => unit === '')) { 
          toast.error('Please fill all the units', { position: 'bottom-right'})
          return
+        }
+        //  form.setError('title', '')
+
+     if(!isPro && credits <= 0) {
+        toast.error('No credits!!.Buy subscription')
+        return
      }
 
      await createCourse.mutateAsync(data, {

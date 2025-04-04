@@ -59,7 +59,10 @@ export async function generateChapters(title: string, units: string[]) {
         const cleanData = text.replace(/```json\s*|\s*```/g, '').trim()
         const outputUnits = JSON.parse(cleanData)
         const result = outputUnit.array().safeParse(outputUnits)
-        if(!result.success) throw new Error(`Invalid output units: ${result.error.flatten().fieldErrors}`)
+        if(!result.success) {
+          console.error('Validation errors:', result.error.format());
+          throw new Error(`Invalid output units: ${result.error.flatten().fieldErrors}`)
+        }
         return result.data
     } catch(err) {
         console.error('Error generating chapters', err)
@@ -162,7 +165,9 @@ export async function getQuestions(chapter_name: string, transcript: string, lev
     }
 }
 
-// chapter_name will be unique or use chapter_id instead to avoid any bug
+// export async function getChaptersSummaries() {
+
+// }
 
 const chapterContentSchema = z.object({
     summary: z.string(),
@@ -171,8 +176,9 @@ const chapterContentSchema = z.object({
 
 type chapterContentType = z.infer<typeof chapterContentSchema>
 
+// chapter_name will be unique or use chapter_id instead to avoid any bug
 export async function getChapterContents(chapters: {name: string, transcript: string} [], level: Level): Promise<Record<string, chapterContentType>> {
-    console.log('Generating content')
+    console.log('Generating chapters content')
     try {
          const prompt = `
             You are an AI assistant that generates comprehensive learning materials for course chapters.
@@ -214,6 +220,7 @@ export async function getChapterContents(chapters: {name: string, transcript: st
             2. Each chapter must have exactly 5 questions
             3. Summary must be under 250 words
             4. Respond ONLY with valid JSON, no other text or markdown
+            5.Options in the question should be 4 only
 
              Now generate the output for all ${chapters.length} chapters.
 
